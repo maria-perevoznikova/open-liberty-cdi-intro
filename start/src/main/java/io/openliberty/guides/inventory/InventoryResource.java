@@ -46,4 +46,12 @@ public class InventoryResource {
     public InventoryList listContents() {
         return manager.list();
     }
+
+    @GET
+    @Path("/reset")
+    @Produces(MediaType.APPLICATION_JSON)
+    public InventoryList clearContents() {
+        manager.clear();
+        return manager.list();
+    }
 }

@@ -11,20 +11,29 @@ import jakarta.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class InventoryManager {
 
-    private List<SystemData> systems = Collections.synchronizedList(new ArrayList<>());
+    private final List<SystemData> systems = Collections.synchronizedList(new ArrayList<>());
 
-    public void add(String hostname, Properties systemProps) {
+    public synchronized void add(String hostname, Properties systemProps) {
         Properties props = new Properties();
         props.setProperty("os.name", systemProps.getProperty("os.name"));
         props.setProperty("user.name", systemProps.getProperty("user.name"));
 
         SystemData system = new SystemData(hostname, props);
         if (!systems.contains(system)) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
             systems.add(system);
         }
     }
 
     public InventoryList list() {
         return new InventoryList(systems);
+    }
+
+    public void clear() {
+        systems.clear();
     }
 }
